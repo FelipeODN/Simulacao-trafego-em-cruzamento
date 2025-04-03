@@ -6,15 +6,23 @@ import pandas as pd
 import time
 pygame.init()
 # Cores:
-branco =  pygame.image.load("Car64.png")
-preto = pygame.image.load("CarPolice.png")
-asfalto =  35 , 35 , 35 
-vermelho =  pygame.image.load("CarRED64.png")
-azul =  pygame.image.load("CarBlue64.png")
-verde =  pygame.image.load("CarGreen64.png")
-amarelo =  pygame.image.load("CarYellow64.png")
+asfalto =  35 , 35 , 35
 verde_escuro =  0, 75 ,0 
-cores = [branco,preto,vermelho,azul,verde,amarelo]
+branco =  pygame.image.load("Carro_branco.png")
+polícia = pygame.image.load("carro_policia3.png")
+vermelho =  pygame.image.load("Carro_Vermelho.png")
+azul =  pygame.image.load("Carro_azul.png")
+verde =  pygame.image.load("carro_verde.png")
+amarelo =  pygame.image.load("Carro_Amarelo.png")
+cinza = pygame.image.load("Carro_cinza.png")
+marrom = pygame.image.load("Carro_marrom.png")
+cinza2 = pygame.image.load("carro_cinza2.png")
+azul2 = pygame.image.load("Carro_azul2.png")
+preto = pygame.image.load("preto.png")
+caramelo = pygame.image.load("caramelo.png")
+azul_metalico = pygame.image.load("carro_azul_metalico.png")
+laranja = pygame.image.load("laranja.png")
+cores = [branco,polícia,vermelho,azul,verde,amarelo,cinza,marrom,cinza2,azul2,preto,caramelo,azul_metalico,laranja]
 # DIMENSÕES:
 c,l = 1200,800
 tela = pygame.display.set_mode(( c, l ), pygame.RESIZABLE)
@@ -48,31 +56,23 @@ class Carro:
         tela.blit(self.cores, (int(self.x), int(self.y)))
 
     def mostrar_velocidade(self, tela):
-        # Calcula o ponto central do carro
         centro_x = self.x + self.c_carro/2
         centro_y = self.y + self.l_carro/2
-        
-        # Calcula o ponto final do vetor (20 pixels na direção da velocidade)
         fim_x = centro_x + self.velocidade_x * 20
         fim_y = centro_y + self.velocidade_y * 20
-        
-        # Desenha a linha do vetor
         pygame.draw.line(tela, (255, 255, 255), (centro_x, centro_y), (fim_x, fim_y), 2)
-        
-        # Mostra o valor da velocidade
         velocidade_texto = f"{abs(self.velocidade_x + self.velocidade_y):.2f}m/s"
         texto = fonte.render(velocidade_texto, True, 'white')
-        tela.blit(texto, (centro_x - 20 , centro_y - 50 ))    
+        if self.velocidade_x != 0:
+            tela.blit(texto, (centro_x - 35 , centro_y - 50 ))
+        else :
+            tela.blit(texto, (centro_x - 30 , centro_y - 70 ))
 
     def movimento(self):    
-               
-        # Verifica se deve parar por causa do semáforo
         parado_semaforo = False
-        
         # Para carros horizontais (via1 e via2)
         if self.velocidade_x != 0:
-            if estado1 == 'vermelho':
-
+            if estado1 == 'vermelho' or estado1 == 'amarelo':
                 if self.velocidade_x < 0:  # Via1 (indo para esquerda)
                     if faixa_branca1 <= self.x < faixa_branca1 + c_carro/2:
                         parado_semaforo = True
@@ -89,9 +89,8 @@ class Carro:
                             dx = abs(self.x - carro.x)
                             if self.x < carro.x and dx < c_carro*1.2 and 0 <= self.x < faixa_branca2:
                                 parado_semaforo = True
-
         # Para carros verticais (via3 e via4)
-        elif estado2 == 'vermelho':
+        elif estado2 == 'vermelho' or estado2 == 'amarelo':
             if self.velocidade_y > 0:  # Via3 (indo para baixo)
                 if faixa_branca3 - c_carro/4 <= self.y+c_carro < faixa_branca3:
                     parado_semaforo = True
@@ -108,12 +107,10 @@ class Carro:
                         dy = abs(self.y - carro.y)
                         if self.y > carro.y and dy < c_carro*1.2 and faixa_branca4 <= self.y < l:
                             parado_semaforo = True
-
         # Se não está parado no semáforo, move normalmente
         if not parado_semaforo:
             self.x += self.velocidade_x
             self.y += self.velocidade_y
-
 # Distância segura:
         for outro_carro in carros:
             if outro_carro != self :
@@ -231,14 +228,14 @@ dt,a = 0,0
 rodando = True
 tempo_anterior1,tempo_anterior2 = time.time(),time.time()
 inicio = time.time()
-duracoes = {"vermelho": 6, "amarelo": 1 , "verde": 6}
+duracoes = {"vermelho": 6, "amarelo": 3 , "verde": 6}
 estado1= random.choice(['vermelho','amarelo','verde'])
 if estado1 == 'vermelho':
     estado2 = 'verde'
 elif estado1 == 'verde':
     estado2 = 'vermelho'
 else:  # se estado1 == 'amarelo'
-    estado2 = 'vermelho'
+    estado2 = 'verde'
 pares_colididos = set()
 contador_colisoes = 0
 
@@ -272,7 +269,8 @@ while rodando:
             estado1 = "vermelho"
         tempo_anterior1 = time.time()
     if a == 1 :
-            tempo_anterior1 = time.time()
+        tempo_anterior1 = time.time()
+        tempo_semaforo1 = time.time()-tempo_anterior1
     if time.time() - tempo_anterior2 > duracoes[estado2] or a == 2:
         if estado2 == "vermelho":
             estado2 = "verde"
@@ -283,7 +281,10 @@ while rodando:
         tempo_anterior2 = time.time()
     if a == 2 :
         tempo_anterior2 = time.time()
+        tempo_semaforo2 = time.time()-tempo_anterior2
     a = 0
+    tempo_semaforo1 = time.time()-tempo_anterior1
+    tempo_semaforo2 = time.time()-tempo_anterior2
 
 # CRIAÇÃO CARROS:
 
@@ -384,10 +385,14 @@ while rodando:
     texto_contador = f"Colisões: {contador_colisoes}"
     texto_colisao = fonte.render(texto_contador, True, 'white')
     #legenda semáforos
+    tp1 = f"{tempo_semaforo1:.1f}s"
+    texto_tempo_semaforo1 = fonte.render(tp1,True,'white')
+    tp2 = f"{tempo_semaforo2:.1f}s"
+    texto_tempo_semaforo2 = fonte.render(tp2,True,'white')
     mudar_semaforo1 = "esquerdo mouse troca o sinal -->"
-    texto_semaforo1 = fonte.render(mudar_semaforo1,True,'white')
+    texto_mudar_semaforo1 = fonte.render(mudar_semaforo1,True,'white')
     mudar_semaforo2 = "<-- direito do mouse troca o sinal"
-    texto_semaforo2 = fonte.render(mudar_semaforo2,True,'white')
+    texto_mudar_semaforo2 = fonte.render(mudar_semaforo2,True,'white')
     # legenda comandos limpar
     limpar_via1 = "aperte '1' para limpar via 1"
     texto_limpar1 = fonte.render(limpar_via1,True,('white'))
@@ -407,13 +412,15 @@ while rodando:
     desenhar_semaforo2(estado2)
     tela.blit(texto_renderizado, (20, 20))
     tela.blit(texto_colisao, (820, 20))
-    tela.blit(texto_semaforo1, ( (c-l_rua-900)/2 , py_rua+l_rua+50 ) )
-    tela.blit(texto_semaforo2, ( (c+l_rua+120)/2 , py_rua-80 ))
+    tela.blit(texto_mudar_semaforo1, ( (c-l_rua-900)/2 , py_rua+l_rua+50 ) )
+    tela.blit(texto_mudar_semaforo2, ( (c+l_rua+120)/2 , py_rua-80 ))
     tela.blit(texto_limpar1, (820, 600))
     tela.blit(texto_limpar2, (820, 630))
     tela.blit(texto_limpar3, (820, 660))
     tela.blit(texto_limpar4, (820, 690))
     tela.blit(texto_limpar_tudo, (820, 720))
+    tela.blit(texto_tempo_semaforo1, ((c-l_rua)/2-48, py_rua+l_rua+140))
+    tela.blit(texto_tempo_semaforo2, ((c+l_rua)/2+5, 100))
 
     carros = carros_via1+carros_via2+carros_via3+carros_via4
     for carro in carros:
