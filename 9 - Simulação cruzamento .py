@@ -454,11 +454,11 @@ while rodando:
     dt = clock.tick(60)
 
 # Fim da Simulação
-'''texto = texto_unificado = (
+texto = texto_unificado = (
     "Você rodou a Simulação 9:\n\n"
     "A simulação durou %.2f segundos\n\n"
     "Houve %d colisões na simulação" ) % (tempo_decorrido, contador_colisoes)
 plt.text(0.5, 0.5, texto, color="black", fontsize=12, ha='center')
-plt.axis('off')'''
+plt.axis('off')
 plt.show()
 pygame.quit()
