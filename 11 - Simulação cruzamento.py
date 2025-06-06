@@ -21,8 +21,8 @@ cinza2 = pygame.image.load("carros/carro_cinza2.png")
 azul2 = pygame.image.load("carros/Carro_azul2.png")
 preto = pygame.image.load("carros/preto.png")
 caramelo = pygame.image.load("carros/caramelo.png")
-azul_metalico = pygame.image.load("carro_azul_metalico.png")
-laranja = pygame.image.load("laranja.png")
+azul_metalico = pygame.image.load("carros/carro_azul_metalico.png")
+laranja = pygame.image.load("carros/laranja.png")
 cores = [branco,polícia,vermelho,azul,verde,amarelo,cinza,marrom,cinza2,azul2,preto,caramelo,azul_metalico,laranja]
 # DIMENSÕES:
 c,l = 1200,800
